@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PursuitVLA: an executable vision-language-action policy for coordinated pursuit-evasion games.">
+  <title>PursuitVLA | Project Page</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="PursuitVLA home">PursuitVLA</a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#overview">Overview</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#hardware">Hardware</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-inner">
+        <p class="eyebrow">Anonymous project page</p>
+        <h1 id="page-title"><span class="title-accent">PursuitVLA</span>: An Executable Vision-Language-Action Policy for Zero-Shot Generalization in Pursuit-Evasion Games</h1>
+        <p class="hero-lede">A unified autoregressive policy that turns visual geometry, strategic reasoning, and teammate-conditioned action generation into executable multi-agent pursuit.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#method">Explore the method</a>
+          <a class="button button-secondary" href="#results">View key results</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="metric-strip" aria-label="Selected results">
+      <div class="metric"><strong>79.6%</strong><span>capture on unseen maps</span></div>
+      <div class="metric"><strong>93.3%</strong><span>capture after local perturbations</span></div>
+      <div class="metric"><strong>10v1</strong><span>team-size transfer without retraining</span></div>
+      <div class="metric"><strong>80%</strong><span>closed-loop outdoor capture</span></div>
+    </section>
+
+    <section id="overview" class="section section-overview" aria-labelledby="overview-title">
+      <div class="section-heading">
+        <p class="section-kicker">01 / Overview</p>
+        <h2 id="overview-title">Reasoning that remains executable under coordination errors.</h2>
+      </div>
+      <div class="overview-grid">
+        <div class="abstract-copy">
+          <p>Pursuit-evasion games require pursuers to coordinate over long adversarial interactions and complex map geometry while producing executable actions. PursuitVLA is an autoregressive vision-language-action policy that generates reasoning traces and waypoint tokens directly from top-down observations and multi-agent states.</p>
+          <p>Training first uses dynamic-programming demonstrations with strategic reasoning, then applies reinforcement fine-tuning with Sequential Action Compensation (SeqAC). SeqAC scores candidate actions at intermediate states induced by policy-generated teammate prefixes, allowing later pursuers to compensate for earlier deviations.</p>
+          <p>The same role-conditioned policy controls pursuers and evaders. It transfers across unseen maps, remains robust to local geometry changes, scales beyond the 2v1 training setting, and transfers from simulation to a closed-loop outdoor deployment.</p>
+        </div>
+        <aside class="callout" aria-label="Research question">
+          <p class="callout-label">Research question</p>
+          <p>Can one visual policy coordinate multiple agents and emit physically executable decisions when the map, opponent, and teammate actions change?</p>
+        </aside>
+      </div>
+      <div class="contribution-grid">
+        <article class="contribution">
+          <span class="contribution-index">01</span>
+          <h3>Executable VLA policy</h3>
+          <p>Visual observations and multi-agent context are mapped to reasoning traces followed by waypoint action tokens.</p>
+        </article>
+        <article class="contribution">
+          <span class="contribution-index">02</span>
+          <h3>Sequential Action Compensation</h3>
+          <p>Reinforcement fine-tuning evaluates actions from policy-induced intermediate states instead of replaying an idealized teammate prefix.</p>
+        </article>
+        <article class="contribution">
+          <span class="contribution-index">03</span>
+          <h3>Transfer across maps and bodies</h3>
+          <p>The same checkpoint transfers to unseen layouts, larger teams, and a closed-loop outdoor robot system.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="method" class="section section-method" aria-labelledby="method-title">
+      <div class="section-heading">
+        <p class="section-kicker">02 / Method</p>
+        <h2 id="method-title">See, think, act - with the next teammate in context.</h2>
+        <p class="section-intro">Each decision step is generated autoregressively. The policy reads the current map and agent state, reasons about geometry and interaction, emits a short waypoint plan, and appends that plan before generating the next pursuer decision.</p>
+      </div>
+      <figure class="wide-figure">
+        <img src="assets/figures/method-overview.png" alt="Overview of PursuitVLA inputs, waypoint action tokens, autoregressive teammate conditioning, and two-stage training.">
+        <figcaption>Overview of the visual-to-action policy and the SFT to RFT training pipeline.</figcaption>
+      </figure>
+      <div class="method-grid">
+        <article class="method-step">
+          <span class="step-number">01</span>
+          <h3>Visual grounding</h3>
+          <p>A top-down map, task instruction, ego state, and recent action context form a single multimodal query.</p>
+        </article>
+        <article class="method-step">
+          <span class="step-number">02</span>
+          <h3>Waypoint vocabulary</h3>
+          <p>Continuous trajectories are discretized into a compact codebook of executable local displacements.</p>
+        </article>
+        <article class="method-step">
+          <span class="step-number">03</span>
+          <h3>Compensated coordination</h3>
+          <p>SeqAC trains later agents to respond to the state that actually results from earlier policy decisions.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="results" class="section section-results" aria-labelledby="results-title">
+      <div class="section-heading">
+        <p class="section-kicker">03 / Results</p>
+        <h2 id="results-title">Generalization without map-specific graph reconstruction.</h2>
+        <p class="section-intro">The evaluations cover unseen topologies, local obstacle edits, larger pursuer teams, and comparisons against geometric, graph-based, and prompted multimodal baselines.</p>
+      </div>
+      <div class="result-layout">
+        <div class="result-figure-wrap">
+          <figure class="wide-figure">
+            <img src="assets/figures/performance.png" alt="Performance comparison across training and unseen maps.">
+            <figcaption>Capture rate and capture steps across training and unseen maps.</figcaption>
+          </figure>
+        </div>
+        <div class="result-panel">
+          <div class="result-tabs" role="tablist" aria-label="Result summaries">
+            <button class="result-tab is-active" role="tab" aria-selected="true" data-result="unseen">Unseen maps</button>
+            <button class="result-tab" role="tab" aria-selected="false" data-result="perturbed">Perturbed maps</button>
+            <button class="result-tab" role="tab" aria-selected="false" data-result="scale">Team size</button>
+          </div>
+          <div class="result-copy is-active" data-result-panel="unseen">
+            <p class="result-number">79.6%</p>
+            <h3>Capture on eight unseen maps</h3>
+            <p>PursuitVLA reaches 79.6% capture in 120.5 mean steps, compared with 63.0% and 149.1 steps for EPG, without retraining or map-specific graph reconstruction.</p>
+          </div>
+          <div class="result-copy" data-result-panel="perturbed" hidden>
+            <p class="result-number">93.3%</p>
+            <h3>Capture after local map edits</h3>
+            <p>When obstacles are added or removed locally, the policy responds to the updated visual geometry and stays close to its original performance.</p>
+          </div>
+          <div class="result-copy" data-result-panel="scale" hidden>
+            <p class="result-number">10v1</p>
+            <h3>Transfer to larger teams</h3>
+            <p>A policy trained in the 2v1 setting transfers to larger pursuer teams, with capture steps decreasing as additional pursuers coordinate.</p>
+          </div>
+        </div>
+      </div>
+      <figure class="wide-figure secondary-figure">
+        <img src="assets/figures/robustness.png" alt="Robustness and coordination comparison across perturbed maps and team sizes.">
+        <figcaption>Robustness to local geometry changes, team-size transfer, and component ablations.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section section-demos" aria-labelledby="demos-title">
+      <div class="section-heading compact-heading">
+        <p class="section-kicker">04 / Qualitative behavior</p>
+        <h2 id="demos-title">Complementary routes emerge from the same policy.</h2>
+        <p class="section-intro">Pursuers use different free-space routes as the map geometry changes, while the evader is controlled by the same role-conditioned policy.</p>
+      </div>
+      <figure class="wide-figure">
+        <img src="assets/figures/trajectory-comparison.png" alt="Qualitative trajectory comparison across pursuit-evasion policies.">
+        <figcaption>Representative trajectories under matched initial conditions.</figcaption>
+      </figure>
+    </section>
+
+    <section id="hardware" class="section section-hardware" aria-labelledby="hardware-title">
+      <div class="section-heading">
+        <p class="section-kicker">05 / Hardware transfer</p>
+        <h2 id="hardware-title">From simulation to closed-loop outdoor pursuit.</h2>
+        <p class="section-intro">The simulation-trained policy controls two pursuers against a DP-controlled evader without additional policy training. For layout review, the current Case 4 clip is temporarily repeated in all four case slots; the remaining edited demonstrations will replace these copies.</p>
+      </div>
+      <div class="hardware-grid">
+        <figure class="wide-figure">
+          <img src="assets/figures/outdoor-system.png" alt="Outdoor hardware system and closed-loop pursuit setup.">
+          <figcaption>Closed-loop outdoor deployment with three quadruped robots.</figcaption>
+        </figure>
+        <div class="hardware-notes">
+          <div class="hardware-stat"><strong>16 / 20</strong><span>PursuitVLA captures</span></div>
+          <div class="hardware-stat"><strong>10 / 20</strong><span>EPG captures</span></div>
+          <div class="hardware-stat"><strong>2 Hz</strong><span>policy update rate</span></div>
+        </div>
+      </div>
+      <div class="hardware-video-grid" aria-label="Four real-world experiment cases">
+        <figure class="hardware-video">
+          <div class="youtube-frame">
+            <iframe src="https://www.youtube-nocookie.com/embed/jfHEt70Kgd4?rel=0&modestbranding=1" title="Case 1 real-world pursuit demonstration" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+          <figcaption>Case 1 - real-world pursuit demonstration.</figcaption>
+        </figure>
+        <figure class="hardware-video">
+          <div class="video-placeholder" aria-label="Case 2 video placeholder">
+            <span class="placeholder-tag">Case 2</span>
+            <h3>Second configuration</h3>
+            <p>Video will be added after editing is complete.</p>
+          </div>
+          <figcaption>Case 2 - video pending.</figcaption>
+        </figure>
+        <figure class="hardware-video">
+          <div class="video-placeholder" aria-label="Case 3 video placeholder">
+            <span class="placeholder-tag">Case 3</span>
+            <h3>Third configuration</h3>
+            <p>Video will be added after editing is complete.</p>
+          </div>
+          <figcaption>Case 3 - video pending.</figcaption>
+        </figure>
+        <figure class="hardware-video">
+          <div class="youtube-frame">
+            <iframe src="https://www.youtube-nocookie.com/embed/m-FYquRJOeA?rel=0&modestbranding=1" title="Case 4 opposite-side start real-world pursuit demonstration" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+          <figcaption>Case 4 - opposite-side start, the most challenging configuration.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section-citation" aria-labelledby="citation-title">
+      <div class="citation-heading">
+        <p class="section-kicker">06 / Reference</p>
+        <h2 id="citation-title">Project reference</h2>
+        <p>This page intentionally omits author and affiliation information during anonymous review.</p>
+      </div>
+      <div class="citation-block">
+        <pre id="bibtex">@inproceedings{pursuitvla2027,
+  title     = {PursuitVLA: An Executable Vision-Language-Action Policy for Zero-Shot Generalization in Pursuit-Evasion Games},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2027}
+}</pre>
+        <button id="copy-citation" class="copy-button" type="button">Copy BibTeX</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>PursuitVLA</span>
+    <span>Anonymous project page</span>
+    <span>&copy; <span id="year"></span></span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
