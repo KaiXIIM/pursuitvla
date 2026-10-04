@@ -19,11 +19,11 @@ Then open `http://127.0.0.1:4173/`.
 3. Select the default branch and the `/ (root)` folder, then save.
 4. The public page will be available at `https://<username>.github.io/<repository>/`.
 
-The repository does not contain author identities or local raw videos. Case 1 and Case 4 use the two supplied YouTube embeds; Case 2 and Case 3 remain placeholders until their edits are ready.
+The repository does not contain author identities or local raw videos. The four cases use the supplied YouTube embeds.
 
 ## Adding the real-world video
 
-Case 1 and Case 4 currently use responsive YouTube embeds. Case 2 and Case 3 remain as placeholders until their edits are ready. Replace their placeholder blocks with the corresponding YouTube embed URL in `index.html` when available.
+All four cases currently use responsive YouTube embeds. Replace the corresponding embed URL in `index.html` when a later video revision is ready.
 
 For the eventual Google Sites embed, the HTML page and video must be served from a public HTTPS origin. Recommended options are a static host such as GitHub Pages, Cloudflare Pages, or Netlify. Imgur can host short media, but it is less predictable for a long-term research demo page and should not be the source of record for the videos.
 
